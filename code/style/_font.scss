@@ -1,0 +1,95 @@
+// Font variables
+$_mwp_font-family-source-sans: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+@mixin _mwp_source-sans-font(){
+  font-family: $_mwp_font-family-source-sans;
+  font-size: 16px;
+}
+$_mwp_font-family-open-sans: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@mixin _mwp_open-sans-font(){
+  font-family: $_mwp_font-family-open-sans;
+  font-size: 14px;
+}
+
+@font-face {
+  font-family: 'Boing-Bold';
+  src: url('//img1.wsimg.com/ux/fonts/1.3/eot/Boing-Bold.eot?#iefix') format('embedded-opentype'),
+  url('//img1.wsimg.com/ux/fonts/1.3/woff2/Boing-Bold.woff2') format('woff2'),
+  url('//img1.wsimg.com/ux/fonts/1.3/woff/Boing-Bold.woff') format('woff'),
+  url('//img1.wsimg.com/ux/fonts/1.3/ttf/Boing-Bold.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+$font-family-godaddy: "Boing-Bold", Arial, sans-serif;
+@mixin godaddy-font(){
+  font-family: $font-family-godaddy;
+  font-size: 14px;
+}
+
+$_mwp_font-family-arial: Arial, sans-serif;
+@mixin _mwp_arial-font(){
+  font-family: $_mwp_font-family-arial;
+  font-size: 14px;
+}
+
+// Giant - 33px
+$_mwp_font-size-giant: 2.074em;
+// Extra Large - 28px (20.1px)!
+$_mwp_font-size-extra-large: 1.728em;
+
+// Large - 23px
+$_mwp_font-size-large: 1.44em;
+// Medium - 19px
+$_mwp_font-size-medium: 1.2em;
+
+// Regular - 16px
+$_mwp_font-size-regular: 1em;
+
+// Small - 14px (11.6px)!
+$_mwp_font-size-small: 0.833em;
+// Extra Small - 12px
+$_mwp_font-size-extra-small: 0.694em;
+// Tiny - 10px
+$_mwp_font-size-tiny: 0.579em;
+
+$_mwp_font-weight-bold: 700;
+$_mwp_font-weight-semi-bold: 600;
+$_mwp_font-weight-normal: 400;
+$_mwp_font-weight-thin: 300;
+
+._mwp_text-giant{
+  font-size: $_mwp_font-size-giant;
+}
+._mwp_text-extra-large{
+  font-size: $_mwp_font-size-extra-large;
+}
+._mwp_text-large{
+  font-size: $_mwp_font-size-large;
+}
+._mwp_text-medium{
+  font-size: $_mwp_font-size-medium;
+}
+._mwp_text-regular{
+  font-size: $_mwp_font-size-regular;
+}
+._mwp_text-small{
+  font-size: $_mwp_font-size-small;
+}
+._mwp_text-extra-small{
+  font-size: $_mwp_font-size-extra-small;
+}
+._mwp_text-tiny{
+  font-size: $_mwp_font-size-tiny;
+}
+
+._mwp_text-bold{
+  font-weight: $_mwp_font-weight-bold;
+}
+._mwp_text-semi-bold{
+  font-weight: $_mwp_font-weight-semi-bold;
+}
+._mwp_text-normal{
+  font-weight: $_mwp_font-weight-normal;
+}
+._mwp_text-light{
+  font-weight: $_mwp_font-weight-thin;
+}

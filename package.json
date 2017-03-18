@@ -1,0 +1,34 @@
+{
+  "name": "dev_wireframe",
+  "version": "0.0.1",
+  "description": "Initial environment settings for rapid development. Contains code snippets, mixins and useful code examples.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/filip-andjelic/dev_wireframe.git"
+  },
+  "author": "Sphyrna.M0karran",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/filip-andjelic/dev_wireframe/issues"
+  },
+  "homepage": "https://github.com/filip-andjelic/dev_wireframe#readme",
+  "dependencies": {
+    "angular": "1.4.8",
+    "angular-bootstrap": "0.14.3",
+    "angular-cookies": "1.4.8",
+    "angular-marked": "~0.0.17",
+    "angular-moment": "~0.9.2",
+    "angular-sanitize": "1.4.8",
+    "angular-ui-router": "0.2.15",
+    "animate-sass": "~0.6.4",
+    "font-awesome": "4.2.0",
+    "jquery": "2.1.1",
+    "lodash": "3.10.1",
+    "lodash-math": "*",
+    "markdown": "~0.5.0"
+  },
+}
