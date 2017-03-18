@@ -3,19 +3,28 @@
   "version": "0.0.1",
   "description": "Initial environment settings for rapid development. Contains code snippets, mixins and useful code examples.",
   "main": "index.html",
+  "author": "Sphyrna.M0karran",
+  "license": "MIT",
+  "homepage": "https://github.com/filip-andjelic/dev_wireframe#readme",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha \"./lib/**/*.test.js\"",
+    "lint": "eslint --ext .js lib",
+    "lint:fix": "eslint --ext .js lib --fix"
   },
+  "pre-commit": [
+    "lint"
+  ],
+  "pre-push": [
+    "lint"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/filip-andjelic/dev_wireframe.git"
   },
-  "author": "Sphyrna.M0karran",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/filip-andjelic/dev_wireframe/issues"
   },
-  "homepage": "https://github.com/filip-andjelic/dev_wireframe#readme",
   "dependencies": {
     "angular": "1.4.8",
     "angular-bootstrap": "0.14.3",
@@ -31,4 +40,30 @@
     "lodash-math": "*",
     "markdown": "~0.5.0"
   },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.15.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.9.0",
+    "file-system": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-connect": "^5.0.0",
+    "gulp-debug": "^3.0.0",
+    "gulp-eslint": "^3.0.1",
+    "gulp-file": "^0.3.0",
+    "gulp-foreach": "^0.1.0",
+    "gulp-run": "^1.7.1",
+    "gulp-sass": "^3.0.0",
+    "gulp-uglify": "^2.0.1",
+    "gulp-util": "^3.0.8",
+    "gulp-watch": "^4.3.11",
+    "merge-stream": "^1.0.1",
+    "mocha": "^3.2.0",
+    "pre-commit": "^1.2.2",
+    "request": "^2.79.0",
+    "walk": "^2.3.9"
+  }
 }
