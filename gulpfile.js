@@ -9,109 +9,25 @@ var replace = require('gulp-replace');
 var minifyCss = require('gulp-minify-css');
 var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
-var glob = require('gulp-glob-html');
 var templateCache = require('gulp-angular-templatecache');
 var minifyHtml = require('gulp-minify-html');
-var rename = require('gulp-rename');
-var rev = require('gulp-rev');
-var revReplace = require('gulp-rev-replace');
-var useref = require('gulp-useref');
 var filter = require('gulp-filter');
 var imagemin = require('gulp-imagemin');
 var watch = require('gulp-watch');
 var sourcemaps = require('gulp-sourcemaps');
 var gulpIf = require('gulp-if');
-var aws = require('aws-sdk');
-var globfs = require('glob');
-var lazypipe = require('lazypipe');
-var eslint = require('gulp-eslint');
 var through = require('through2');
 
 var config = extend({
-    srcDir: './app',
-    distDir: './dist',
+    srcDir: './code',
+    distDir: './app',
     tmpDir: './.tmp',
     serverHost: '0.0.0.0',
     override: {},
     liveReloadPort: 35729,
     liveReloadClientPort: 35729,
-    webSocketProtocol: 'ws',
-    useSourceMaps: true,
-    googleAnalyticsDevId: '',
-    sourceMapURLPrefix: 'https://orion.managewp.com',
-
-    // cdn specific, overwrite in gulp.local.json
-    "cdnUrl": null,
-    "s3Directory": null,
-    "s3Bucket": null,
-    "s3Region": null,
-    "s3AccessKey": null,
-    "s3SecretKey": null,
-    "sourceMapDirectory": null
-}, require('./gulp.local.json'));
-
-if (process.argv.indexOf('--no-livereload') !== -1) {
-    config.liveReloadPort = false;
-}
-
-if (process.argv.indexOf('--no-source-maps') !== -1) {
-    config.useSourceMaps = false;
-}
-
-if (process.argv.indexOf('--no-splash') !== -1) {
-    config.override.hideSplashScreen = true;
-}
-
-function isLintFixed(file) {
-    // Has ESLint fixed the file contents?
-    return file.eslint && file.eslint.fixed;
-}
-
-function lintFile(filePath) {
-    return gulp.src(filePath)
-        .pipe(eslint())
-        .pipe(eslint.format());
-}
-
-function runInitialLint() {
-    return gulp.src(['app/**/*.js'])
-        .pipe(eslint())
-        .pipe(eslint.formatEach());
-}
-
-function runFullLint() {
-    var fix = process.argv.indexOf('--fix-lint-errors') !== -1;
-    return gulp.src(['app/**/*.js'])
-        .pipe(eslint({fix: fix}))
-        .pipe(eslint.formatEach())
-        .pipe(eslint.failAfterError())
-        .pipe(gulpIf(isLintFixed, gulp.dest('./')));
-}
-
-function getConfigData() {
-    return JSON.stringify([config.srcDir + '/config.json', config.srcDir + '/config.local.json', config.override].reduce(function (carry, data) {
-        try {
-            if (typeof data === 'string') {
-                data = JSON.parse(fs.readFileSync(data).toString());
-            }
-            return extend(carry, data);
-        } catch (e) {
-            return carry;
-        }
-    }, {}));
-}
-
-function clean(cb) {
-    del(config.distDir, cb);
-}
-
-function cleanApiDashboardPath(cb) {
-    del(config.apiDashboardIndexPath, {force: true}, cb);
-}
-
-function cleanTmp(cb) {
-    del(config.tmpDir, cb);
-}
+    webSocketProtocol: 'ws'
+});
 
 function buildCssDev() {
     return gulp.src([config.srcDir + '/styles/bootstrap.scss', config.srcDir + '/styles/application.scss', config.srcDir + '/styles/signup-onboarding.scss'])
@@ -127,7 +43,6 @@ function buildCssDev() {
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest(config.distDir + '/styles'));
 }
-
 function buildDashboardCssDev() {
     return gulp.src([config.srcDir + '/styles/application.scss'])
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
@@ -142,7 +57,6 @@ function buildDashboardCssDev() {
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest(config.distDir + '/styles'));
 }
-
 function buildOnboardingCssDev() {
     return gulp.src([config.srcDir + '/styles/signup-onboarding.scss'])
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
@@ -155,7 +69,6 @@ function buildOnboardingCssDev() {
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest(config.distDir + '/styles'));
 }
-
 function buildBootstrapCssDev() {
     return gulp.src([config.srcDir + '/styles/bootstrap.scss'])
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
@@ -168,7 +81,6 @@ function buildBootstrapCssDev() {
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest(config.distDir + '/styles'));
 }
-
 function buildCss() {
     return gulp.src([config.srcDir + '/styles/bootstrap.scss', config.srcDir + '/styles/application.scss', config.srcDir + '/styles/signup-onboarding.scss'])
         .pipe(sass({
@@ -180,7 +92,6 @@ function buildCss() {
         .pipe(minifyCss())
         .pipe(gulp.dest(config.tmpDir + '/styles'));
 }
-
 function compileTemplate() {
     return templateCache({
         filename: 'template.js',
@@ -191,13 +102,11 @@ function compileTemplate() {
         templateFooter: '}]); }'
     });
 }
-
 function buildTemplateDev() {
     return gulp.src([config.srcDir + '/views/**/*.html', config.srcDir + '/application/**/*.html'])
         .pipe(compileTemplate())
         .pipe(gulp.dest(config.distDir + '/scripts'));
 }
-
 function buildTemplate() {
     return gulp.src([config.srcDir + '/views/**/*.html', config.srcDir + '/application/**/*.html'])
         .pipe(minifyHtml({empty: true, loose: true, spare: true}))
@@ -205,12 +114,6 @@ function buildTemplate() {
         .pipe(uglify())
         .pipe(gulp.dest(config.tmpDir + '/scripts'));
 }
-
-var updateTimestamp = through.obj(function(file, enc, done) {
-    var now = new Date;
-    fs.utimes(file.path, now, now, done);
-});
-
 function buildHtmlDev() {
     var html = gulp.src(config.srcDir + '/index.php');
     if (config.liveReloadPort) {
@@ -233,7 +136,6 @@ function buildHtmlDev() {
         // @TODO Find a fix for add new timestamp to index file so php doesn't cache it.
         .pipe(gulp.dest(config.apiDashboardIndexPath));
 }
-
 function buildHtml() {
     var jsFilter = filter('**/*.js', {restore: true});
     var cssFilter = filter('**/*.css', {restore: true});
@@ -277,25 +179,6 @@ function buildHtml() {
         .pipe(gulp.dest(config.apiDashboardIndexPath))
         .pipe(indexFilter.restore);
 }
-
-// This takes care of rewriting assets to the dashboard.managewp.dev domain for testing the production environment locally.
-// Complicated production nginx rewrite rules for orion.managewp.dev are avoided this way.
-// Only use in local test builds.
-function rewriteHostBase() {
-    return gulp.src(config.distDir + '/index.html')
-        .pipe(replace(/( src=")(scripts\/|images\/)/g, '$1' + '//dashboard.managewp.dev/' + '$2'))
-        .pipe(replace(/( href=")(styles\/|images\/)/g, '$1' + '//dashboard.managewp.dev/' + '$2'))
-        .pipe(replace(/( content=")(images\/)/g, '$1' + '//dashboard.managewp.dev/' + '$2'))
-        .pipe(gulp.dest(config.distDir))
-        .pipe(rename('dashboardIndex_prod.php'))
-        .pipe(gulp.dest(config.apiDashboardIndexPath));
-}
-
-gulp.task(buildHtml);
-
-var reload = function () {
-};
-
 function liveReload() {
     var wss = new ws.Server({port: config.liveReloadPort});
 
@@ -309,11 +192,6 @@ function liveReload() {
         });
     });
 }
-
-function reloadComponent(component) {
-    reload(component);
-}
-
 function watchProject() {
     watch([
         config.srcDir + '/index.php',
@@ -350,14 +228,6 @@ function watchProject() {
         config.srcDir + '/application/**/*.html',
     ], gulp.series(buildTemplateDev, reloadComponent.bind(null, 'html')));
 }
-
-function signalReady() {
-    console.log('Development setup complete!');
-    if (process.argv.indexOf('--npm-script') === -1) {
-        console.log('\x1b[31mIt is recommended to use the `npm start` script to run development environment.', '\x1b[0m');
-    }
-}
-
 function optimizeAssets() {
     var notSvgFilter = filter(['*/**', '!**/*.svg'], {restore: true});
     // Kinda hacky using 'image*' instead of 'images', but on windows setting the 'base' property
@@ -371,7 +241,6 @@ function optimizeAssets() {
         .pipe(rev.manifest())
         .pipe(gulp.dest(config.tmpDir));
 }
-
 function copyStaticAssets() {
     return gulp.src([
         config.srcDir + '/favicon.ico',
@@ -382,180 +251,8 @@ function copyStaticAssets() {
         .pipe(gulp.dest(config.distDir));
 }
 
-function assertCdnConfig(cb) {
-    if (config.cdnUrl === null || config.s3Bucket === null || config.s3Region === null ||
-        config.s3AccessKey === null || config.s3SecretKey === null) {
-        throw new Error("CDN Configuration incomplete!");
-    }
-
-    if (config.cdnUrl.slice(-1) === '/') {
-        config.cdnUrl = config.cdnUrl.substr(0, config.cdnUrl.length - 1);
-    }
-
-    cb();
-}
-
-function switchToCdn(cb) {
-    var timestamp = Math.floor(new Date().getTime() / 1000);
-    var cdn = config.cdnUrl + '/' + timestamp + '/';
-
-    gulp.series(
-        gulp.parallel(
-            function replaceHtmlAssetPaths() {
-                return gulp.src(config.apiDashboardIndexPath + '/dashboardIndex_prod.php')
-                    .pipe(replace(/( src=")(scripts\/|images\/|application\/|assets\/)/g, '$1' + cdn + '$2'))
-                    .pipe(replace(/( href=")(styles\/|images\/|assets\/)/g, '$1' + cdn + '$2'))
-                    .pipe(replace(/( content=")(images\/|assets\/)/g, '$1' + cdn + '$2'))
-                    .pipe(gulp.dest(config.apiDashboardIndexPath));
-            },
-            function rewriteCss() {
-                return gulp.src(config.distDir + '/**/*.css')
-                    .pipe(replace(/url\(\/(styles|images|assets)/g, 'url(/' + config.s3Directory + '/' + timestamp + '/$1'))
-                    .pipe(gulp.dest(config.distDir));
-            }
-        ),
-        function uploadToS3(done) {
-            uploadAssetsToS3(timestamp, function () {
-                done();
-                cb();
-            });
-        }
-    )();
-}
-
-function uploadAssetsToS3(timestamp, cb) {
-    var s3 = new aws.S3({
-        apiVersion: '2006-03-01',
-        accessKeyId: config.s3AccessKey,
-        secretAccessKey: config.s3SecretKey,
-        maxRetries: 10,
-        paramValidation: true,
-        computeChecksums: true,
-        region: config.s3Region
-    });
-
-    var s3KeyFor = function (filename) {
-        if (filename.match(/^source-maps\/.*\.map$/)) {
-            return config.sourceMapDirectory + '/' + filename.replace('source-maps/', '');
-        } else {
-            return config.s3Directory + '/' + timestamp + '/' + filename;
-        }
-
-    };
-
-    /**
-     * S3 requires explicit Content-Type header
-     * CloudFront CDN uses the supplied header to serve assets
-     * so if the correct Content-Type is not provided browsers ignore some assets
-     **/
-    var contentTypeFor = function (filename) {
-        var extension = filename.substr(filename.lastIndexOf('.') + 1);
-
-        var extensionContentTypeMap = {
-            css: 'text/css',
-            js: 'application/javascript',
-            png: 'image/png',
-            jpg: 'image/jpeg',
-            svg: 'image/svg+xml',
-            jpeg: 'image/jpeg'
-        };
-
-        if (extensionContentTypeMap.hasOwnProperty(extension)) {
-            return extensionContentTypeMap[extension];
-        }
-
-        return 'application/octet-stream';
-    };
-
-    globfs("**/*", {cwd: config.distDir, nodir: true}, function (err, files) {
-        if (err) {
-            throw err;
-        }
-
-        var finished = 0;
-
-        var monthFromNow = new Date();
-        monthFromNow.setMonth(monthFromNow.getMonth() + 1);
-
-        files.forEach(function (file) {
-            s3.putObject({
-                Bucket: config.s3Bucket,
-                Key: s3KeyFor(file),
-                Body: fs.createReadStream(config.distDir + '/' + file),
-                ContentType: contentTypeFor(file),
-                CacheControl: 'public,max-age=2592000',
-                Expires: monthFromNow
-            }, function (err, result) {
-                if (err) {
-                    throw new Error(err);
-                }
-
-                finished++;
-                if (files.length === finished) {
-                    cb();
-                }
-            });
-        });
-    });
-}
-
-function rebuildMwpIcons(cb) {
-    var iconsPath = config.srcDir + '/styles/fonts/MwpIcons';
-    var iconsStyle = iconsPath + '/_icons.scss';
-
-    // replace url('... with font-url('MwpIcons/...
-    var iconsStyleContents = fs.readFileSync(iconsStyle, {encoding: 'utf8'});
-    iconsStyleContents = iconsStyleContents.replace(/url\('/g, "url('/styles/fonts/MwpIcons/");
-    fs.writeFileSync(iconsStyle, iconsStyleContents);
-
-    // extract icon classes
-    var classes = iconsStyleContents.match(/\.fa\-([^:]+)/g);
-    var icons = [];
-    for (var i = 0; i < classes.length; i++) {
-        var clazz = classes[i];
-        var matches = clazz.match(/\.fa\-([^:]+)$/);
-        icons.push({class: matches[1]});
-    }
-
-    // Replace elements ctrl icons shown
-    var elementsCtrlPathname = 'app/scripts/dashboard/controllers/ElementsCtrl.js';
-    var elementsCtrl = fs.readFileSync(elementsCtrlPathname, {encoding: 'utf8'});
-    elementsCtrl = elementsCtrl.replace(/\$scope\.icons[^;]+;/, '$scope.icons = ' + JSON.stringify(icons) + ';');
-    fs.writeFileSync(elementsCtrlPathname, elementsCtrl);
-
-    var iconsCtrlPath = 'app/scripts/dashboard/development-guide/StyleGuideIconsCtrl.js';
-    var iconsCtrl = fs.readFileSync(iconsCtrlPath, {encoding: 'utf8'});
-    iconsCtrl = iconsCtrl.replace(/\$scope\.icons[^;]+;/, '$scope.icons = ' + JSON.stringify(icons) + ';');
-    fs.writeFileSync(iconsCtrlPath, iconsCtrl);
-
-    iconsStyleContents = iconsStyleContents.replace(/\.fa/, '@import "core";\n@import "spinning";\n\n.fa');
-    fs.writeFileSync(iconsStyle, iconsStyleContents);
-    cb();
-}
-
-function copyBowerCss() {
-    return gulp.src([
-        config.srcDir + '/bower_components/angular-ui-select/dist/select.css',
-        config.srcDir + '/bower_components/ng-sortable/dist/ng-sortable.css',
-        config.srcDir + '/bower_components/godaddy-pro-header/build/godaddy-pro-header.css'
-    ]).pipe(gulp.dest(config.tmpDir + '/styles'));
-}
-
-function copyBowerCssDev() {
-    return gulp.src([
-        config.srcDir + '/bower_components/angular-ui-select/dist/select.css',
-        config.srcDir + '/bower_components/ng-sortable/dist/ng-sortable.css',
-        config.srcDir + '/bower_components/godaddy-pro-header/build/godaddy-pro-header.css'
-    ]).pipe(gulp.dest(config.distDir + '/styles'));
-}
-
-gulp.task(rebuildMwpIcons);
-
 gulp.task('default',
     gulp.series(
-        clean,
-        cleanApiDashboardPath,
-        copyBowerCssDev,
         gulp.parallel(
             buildTemplateDev,
             buildCssDev,
@@ -563,40 +260,18 @@ gulp.task('default',
         ),
         gulp.parallel(
             liveReload,
-            watchProject,
-            signalReady /*,
-             runInitialLint */
+            watchProject
         )
     )
 );
-
 gulp.task('build',
     gulp.series(
-        clean,
-        cleanTmp,
-        cleanApiDashboardPath,
-        gulp.parallel(
-            copyBowerCss,
-            optimizeAssets
-        ),
+        optimizeAssets
         gulp.parallel(
             copyStaticAssets,
             buildTemplate,
             buildCss
         ),
-        buildHtml,
-        cleanTmp
+        buildHtml
     )
 );
-
-// Used to test local production builds
-gulp.task('build-locally',
-    gulp.series(
-        'build',
-        rewriteHostBase
-    )
-);
-
-gulp.task('build-cdn', gulp.series(assertCdnConfig, 'build', switchToCdn));
-
-gulp.task('lint', runFullLint);
