@@ -1,0 +1,13 @@
+<div class="simple-gauge-wrapper">
+    <div class="simple-performance-gauge">
+        <div class="gauge-bottom-cap"></div>
+        <div class="gauge-line-cover">
+            <div class="gauge-line-fill gauge-{{computedGrade}}-grade"></div>
+        </div>
+    </div>
+    <div class="simple-gauge-needle"></div>
+    <div ng-if="labels" class="gauge-label">
+        <div class="current-label gauge-{{computedGrade}}-grade">{{computedGrade}} ({{grade}}%)</div>
+        <div ng-if="getPrevious" class="previous-label smp-label-font">Previous: {{getPrevious}}%</div>
+    </div>
+</div>

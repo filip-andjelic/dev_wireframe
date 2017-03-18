@@ -1,0 +1,72 @@
+/**
+ * These styles apply on Safari browsers, from version 7.1 +
+ */
+_::-webkit-full-page-media, _:future, :root {
+
+  .mwp-loader {
+    -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+  }
+  .scan.scan-history .loader-view {
+    .loader-animation-wrap:before, .check-now-wrapper:before {
+      margin-left: 0px !important;
+    }
+  }
+  button._mwp_btn {
+    display: inline-block !important;
+  }
+  .center-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .ace_scrollbar {
+    z-index: inherit;
+  }
+  .website-protocol-wrapper {
+    display: block;
+    .form-control {
+      $select-border-radius: 4px;
+      display: inline-block;
+      &.website-protocol {
+        @include border-radius(0);
+        border-top-left-radius: $select-border-radius;
+        border-bottom-left-radius: $select-border-radius;
+        width: 85px;
+      }
+      &.website-url {
+        position: relative;
+        left: -5px;
+        max-width: calc(100% - 90px);
+        @include border-radius(0);
+        border-left: none;
+        border-top-right-radius: $select-border-radius;
+        border-bottom-right-radius: $select-border-radius;
+      }
+    }
+  }
+  .performance-scan {
+    .har-viewer {
+      .request-info {
+        @include flex-align-items(unset);
+        padding-top: 13px;
+      }
+      .status-text, .timing {
+        margin-top: 3px;
+      }
+    }
+    .info-well-expanded {
+
+      .expander-container {
+        bottom: initial !important;
+        top: calc(100% - 53px) !important;
+      }
+    }
+  }
+  #clone {
+    .form-wrapper .ftp-host input {
+      width: calc(100% - 104px);
+    }
+  }
+}
